@@ -8,13 +8,13 @@ Implementación de la especificación [01_Hello_World](https://yorche3.github.io
 
 | Archivo | Propósito |
 |---------|-----------|
-| [`helloworld.fsx`](helloworld.fsx) | Código fuente: imprime `"Hello, World! from F#"` en la consola. |
+| [`hello-world.fsx`](hello-world.fsx) | Código fuente: imprime `"Hello, World! from F#"` en la consola. |
 
 **Estructura de directorios esperada:**
 
 ```text
 helloworld/
-├── helloworld.fsx   # Código fuente (script)
+├── hello-world.fsx   # Código fuente (script)
 └── README.md        # Este archivo
 ```
 
@@ -42,7 +42,7 @@ Features:
 
 ## 📄 Archivos de configuración clave / Key Configuration Files
 
-### `helloworld.fsx`
+### `hello-world.fsx`
 
 **ES:** Script F# que imprime un saludo en la consola usando `printfn`.
 
@@ -88,7 +88,7 @@ winget install Microsoft.DotNet.SDK.8
 
 ```bash
 cd core/foundations/helloworld
-dotnet fsi helloworld.fsx
+dotnet fsi hello-world.fsx
 ```
 
 **Salida esperada / Expected output:**
@@ -105,7 +105,7 @@ Hello, World! from F#
 
 ```bash
 # Crear un proyecto F# desde cero
-dotnet new console -lang F# -n HelloWorld
+dotnet new console -lang F# -n hello-world
 cd HelloWorld
 
 # Reemplazar Program.fs con el contenido del script
