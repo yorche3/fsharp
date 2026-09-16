@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NaiveSort.fsproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/NaiveSort.Tests.fsproj" />
+  </Folder>
+</Solution>
