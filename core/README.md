@@ -9,6 +9,7 @@ Implementaciones de los módulos principales en **F# (.NET 10)**, ejecutados con
 | Módulo | Descripción |
 |--------|-------------|
 | [`foundations/`](foundations/) | **Fase 0 — Fundamentos**: `helloworld`, `hellouser`, `calculator`, `numbers` |
+| [`algorithms/`](algorithms/) | **Fase 1 — Algoritmos Puros**: `naive_sort` |
 
 ---
 
@@ -30,6 +31,10 @@ dotnet test calculator.slnx
 # Numbers Tests
 cd foundations/numbers
 dotnet test numbers.slnx
+
+# Naive Sort Tests
+cd algorithms/naive_sort
+dotnet test NaiveSort.slnx
 ```
 
 ---
