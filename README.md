@@ -11,7 +11,7 @@ Usa `.fsx` scripts para programas simples y proyectos `.fsproj` con soluciones `
 | Módulo | Descripción |
 |--------|-------------|
 | [`core/foundations/`](core/foundations/) | **Fase 0 — Fundamentos**: `helloworld`, `hellouser`, `calculator`, `numbers` |
-| [`core/algorithms/`](core/algorithms/) | **Fase 1 — Algoritmos Puros**: `naive_sort` |
+| [`core/algorithms/`](core/algorithms/) | **Fase 1 — Algoritmos Puros**: `naive_sort`, `data_structures_basics` |
 
 ---
 
@@ -37,6 +37,10 @@ dotnet test numbers.slnx
 # Naive Sort Tests
 cd core/algorithms/naive_sort
 dotnet test NaiveSort.slnx
+
+# Data Structures Basics Tests
+cd core/algorithms/data_structures_basics
+dotnet test DataStructuresBasics.slnx
 ```
 
 ---
