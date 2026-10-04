@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <Compile Include="DataStructuresBasicsTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/DataStructuresBasics/DataStructuresBasics.fsproj" />
+    <ProjectReference Include="../../src/DataStructuresBasics.fs/DataStructuresBasics.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
