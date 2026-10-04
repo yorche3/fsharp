@@ -13,8 +13,10 @@ open DataStructuresBasics
 // especificación. Los registros son inmutables, de modo que cada paso devuelve
 // la estructura siguiente y ninguna aserción daña el escenario.
 //
-// Indicadores de fallo: `None` en las extracciones (`headValue`, `pop`, `peek`,
-// `dequeue` y `delete`), `false` en las banderas y `0` en los contadores.
+// Indicadores de fallo: solo `Node` usa `None` (su enlace ausente). Las
+// extracciones devuelven un valor: `int` con `Contract.FAILURE_VALUE` (`-1`) en
+// `headValue`, `peek` y la parte del valor de `pop`/`dequeue`, y `(false, …)` en
+// `delete`; las banderas devuelven `false` y los contadores, `0`.
 
 /// Comprueba una aserción del caso solo si el sujeto está entre sus dueños.
 let private assertFor (subject: string) (owners: string list) (case: string) (expected: 'a) (actual: 'a) =
@@ -22,15 +24,18 @@ let private assertFor (subject: string) (owners: string list) (case: string) (ex
         Assert.True((actual = expected), $"{subject} should return {expected} in {case} but got {actual}")
 
 /// Recorre la lista con las operaciones del contrato (`headValue` + `delete`),
-/// que devuelve una lista nueva: el escenario queda intacto.
+/// que devuelve una lista nueva: el escenario queda intacto. Los valores de los
+/// casos son positivos, así que no chocan con el indicador de fallo.
 let private traverse (list: LinkedList) =
     let rec walk acc current =
-        match LinkedList.headValue current with
-        | None -> List.rev acc
-        | Some value ->
-            match LinkedList.delete value current with
-            | Some rest -> walk (value :: acc) rest
-            | None -> List.rev acc
+        let value = LinkedList.headValue current
+
+        if value = Contract.FAILURE_VALUE then
+            List.rev acc
+        else
+            let (found, rest) = LinkedList.delete value current
+
+            if found then walk (value :: acc) rest else List.rev acc
 
     walk [] list
 
@@ -59,7 +64,7 @@ let private linkedListCases (subject: string) =
     let emptyList = LinkedList.empty
     assertFor subject [ "linked_list_init"; "linked_list_is_empty" ] case1 true (LinkedList.isEmpty emptyList)
     assertFor subject [ "linked_list_init"; "linked_list_size" ] case1 0 (LinkedList.size emptyList)
-    assertFor subject [ "linked_list_init"; "linked_list_get_head" ] case1 None (LinkedList.headValue emptyList)
+    assertFor subject [ "linked_list_init"; "linked_list_get_head" ] case1 Contract.FAILURE_VALUE (LinkedList.headValue emptyList)
 
     let case2 = "insert at both ends"
     let inserted =
@@ -73,32 +78,27 @@ let private linkedListCases (subject: string) =
     assertFor subject [ "linked_list_insert_head"; "linked_list_insert_tail"; "linked_list_get_head" ] case2 [ 5; 10; 20; 10 ] (traverse inserted)
 
     let case3 = "delete first occurrence"
-    let deleted = LinkedList.delete 10 inserted
-    assertFor subject [ "linked_list_delete" ] case3 true (Option.isSome deleted)
-    let afterDelete = Option.defaultValue inserted deleted
+    let (deletedFirst, afterDelete) = LinkedList.delete 10 inserted
+    assertFor subject [ "linked_list_delete" ] case3 true deletedFirst
     assertFor subject [ "linked_list_delete"; "linked_list_size" ] case3 3 (LinkedList.size afterDelete)
     assertFor subject [ "linked_list_delete"; "linked_list_get_head" ] case3 [ 5; 20; 10 ] (traverse afterDelete)
 
     let case4 = "absent value"
-    let absent = LinkedList.delete 99 afterDelete
-    assertFor subject [ "linked_list_delete" ] case4 false (Option.isSome absent)
-    let afterAbsent = Option.defaultValue afterDelete absent
+    let (deletedAbsent, afterAbsent) = LinkedList.delete 99 afterDelete
+    assertFor subject [ "linked_list_delete" ] case4 false deletedAbsent
     assertFor subject [ "linked_list_delete"; "linked_list_size" ] case4 3 (LinkedList.size afterAbsent)
     assertFor subject [ "linked_list_delete"; "linked_list_get_head" ] case4 [ 5; 20; 10 ] (traverse afterAbsent)
 
     let case5 = "empty the list"
-    let deletedHead = LinkedList.delete 5 afterAbsent
-    assertFor subject [ "linked_list_delete" ] case5 true (Option.isSome deletedHead)
-    let afterHeadDelete = Option.defaultValue afterAbsent deletedHead
-    let deletedSecond = LinkedList.delete 20 afterHeadDelete
-    assertFor subject [ "linked_list_delete" ] case5 true (Option.isSome deletedSecond)
-    let afterSecondDelete = Option.defaultValue afterHeadDelete deletedSecond
-    let deletedLast = LinkedList.delete 10 afterSecondDelete
-    assertFor subject [ "linked_list_delete" ] case5 true (Option.isSome deletedLast)
-    let emptied = Option.defaultValue afterSecondDelete deletedLast
+    let (deletedHead, afterHeadDelete) = LinkedList.delete 5 afterAbsent
+    assertFor subject [ "linked_list_delete" ] case5 true deletedHead
+    let (deletedSecond, afterSecondDelete) = LinkedList.delete 20 afterHeadDelete
+    assertFor subject [ "linked_list_delete" ] case5 true deletedSecond
+    let (deletedLast, emptied) = LinkedList.delete 10 afterSecondDelete
+    assertFor subject [ "linked_list_delete" ] case5 true deletedLast
     assertFor subject [ "linked_list_delete"; "linked_list_is_empty" ] case5 true (LinkedList.isEmpty emptied)
     assertFor subject [ "linked_list_delete"; "linked_list_size" ] case5 0 (LinkedList.size emptied)
-    assertFor subject [ "linked_list_delete"; "linked_list_get_head" ] case5 None (LinkedList.headValue emptied)
+    assertFor subject [ "linked_list_delete"; "linked_list_get_head" ] case5 Contract.FAILURE_VALUE (LinkedList.headValue emptied)
 
 // ============================================================
 // Escenario de Stack — 4 casos
@@ -109,33 +109,31 @@ let private stackCases (subject: string) =
     let emptyStack = Stack.empty
     assertFor subject [ "stack_init"; "stack_is_empty" ] case1 true (Stack.isEmpty emptyStack)
     assertFor subject [ "stack_init"; "stack_size" ] case1 0 (Stack.size emptyStack)
-    assertFor subject [ "stack_init"; "stack_peek" ] case1 None (Stack.peek emptyStack)
-    assertFor subject [ "stack_init"; "stack_pop" ] case1 None (Stack.pop emptyStack)
+    assertFor subject [ "stack_init"; "stack_peek" ] case1 Contract.FAILURE_VALUE (Stack.peek emptyStack)
+    assertFor subject [ "stack_init"; "stack_pop" ] case1 Contract.FAILURE_VALUE (Stack.pop emptyStack |> fst)
+    assertFor subject [ "stack_init"; "stack_pop" ] case1 emptyStack (Stack.pop emptyStack |> snd)
 
     let case2 = "LIFO and non-mutating peek"
     let pushed = emptyStack |> Stack.push 10 |> Stack.push 20 |> Stack.push 30
-    assertFor subject [ "stack_push"; "stack_peek" ] case2 (Some 30) (Stack.peek pushed)
+    assertFor subject [ "stack_push"; "stack_peek" ] case2 30 (Stack.peek pushed)
     assertFor subject [ "stack_push"; "stack_size" ] case2 3 (Stack.size pushed)
 
     let case3 = "removal and reuse"
-    let poppedThird = Stack.pop pushed
-    assertFor subject [ "stack_pop" ] case3 (Some 30) (poppedThird |> Option.map fst)
-    let afterThirdPop = poppedThird |> Option.map snd |> Option.defaultValue pushed
+    let (poppedThird, afterThirdPop) = Stack.pop pushed
+    assertFor subject [ "stack_pop" ] case3 30 poppedThird
     let reused = Stack.push 40 afterThirdPop
-    let poppedReused = Stack.pop reused
-    assertFor subject [ "stack_pop"; "stack_push" ] case3 (Some 40) (poppedReused |> Option.map fst)
-    let afterReusedPop = poppedReused |> Option.map snd |> Option.defaultValue reused
-    let poppedSecond = Stack.pop afterReusedPop
-    assertFor subject [ "stack_pop" ] case3 (Some 20) (poppedSecond |> Option.map fst)
-    let afterSecondPop = poppedSecond |> Option.map snd |> Option.defaultValue afterReusedPop
-    let poppedFirst = Stack.pop afterSecondPop
-    assertFor subject [ "stack_pop" ] case3 (Some 10) (poppedFirst |> Option.map fst)
-    let afterFirstPop = poppedFirst |> Option.map snd |> Option.defaultValue afterSecondPop
+    let (poppedReused, afterReusedPop) = Stack.pop reused
+    assertFor subject [ "stack_pop"; "stack_push" ] case3 40 poppedReused
+    let (poppedSecond, afterSecondPop) = Stack.pop afterReusedPop
+    assertFor subject [ "stack_pop" ] case3 20 poppedSecond
+    let (poppedFirst, afterFirstPop) = Stack.pop afterSecondPop
+    assertFor subject [ "stack_pop" ] case3 10 poppedFirst
     assertFor subject [ "stack_pop"; "stack_is_empty" ] case3 true (Stack.isEmpty afterFirstPop)
     assertFor subject [ "stack_pop"; "stack_size" ] case3 0 (Stack.size afterFirstPop)
 
     let case4 = "empty after removal"
-    assertFor subject [ "stack_pop" ] case4 None (Stack.pop afterFirstPop)
+    assertFor subject [ "stack_pop" ] case4 Contract.FAILURE_VALUE (Stack.pop afterFirstPop |> fst)
+    assertFor subject [ "stack_pop" ] case4 afterFirstPop (Stack.pop afterFirstPop |> snd)
     assertFor subject [ "stack_pop"; "stack_is_empty" ] case4 true (Stack.isEmpty afterFirstPop)
 
 // ============================================================
@@ -147,33 +145,31 @@ let private queueCases (subject: string) =
     let emptyQueue = Queue.empty
     assertFor subject [ "queue_init"; "queue_is_empty" ] case1 true (Queue.isEmpty emptyQueue)
     assertFor subject [ "queue_init"; "queue_size" ] case1 0 (Queue.size emptyQueue)
-    assertFor subject [ "queue_init"; "queue_peek" ] case1 None (Queue.peek emptyQueue)
-    assertFor subject [ "queue_init"; "queue_dequeue" ] case1 None (Queue.dequeue emptyQueue)
+    assertFor subject [ "queue_init"; "queue_peek" ] case1 Contract.FAILURE_VALUE (Queue.peek emptyQueue)
+    assertFor subject [ "queue_init"; "queue_dequeue" ] case1 Contract.FAILURE_VALUE (Queue.dequeue emptyQueue |> fst)
+    assertFor subject [ "queue_init"; "queue_dequeue" ] case1 emptyQueue (Queue.dequeue emptyQueue |> snd)
 
     let case2 = "FIFO and non-mutating peek"
     let enqueued = emptyQueue |> Queue.enqueue 10 |> Queue.enqueue 20 |> Queue.enqueue 30
-    assertFor subject [ "queue_enqueue"; "queue_peek" ] case2 (Some 10) (Queue.peek enqueued)
+    assertFor subject [ "queue_enqueue"; "queue_peek" ] case2 10 (Queue.peek enqueued)
     assertFor subject [ "queue_enqueue"; "queue_size" ] case2 3 (Queue.size enqueued)
 
     let case3 = "removal and reuse"
-    let dequeuedFirst = Queue.dequeue enqueued
-    assertFor subject [ "queue_dequeue" ] case3 (Some 10) (dequeuedFirst |> Option.map fst)
-    let afterFirstDequeue = dequeuedFirst |> Option.map snd |> Option.defaultValue enqueued
+    let (dequeuedFirst, afterFirstDequeue) = Queue.dequeue enqueued
+    assertFor subject [ "queue_dequeue" ] case3 10 dequeuedFirst
     let reused = Queue.enqueue 40 afterFirstDequeue
-    let dequeuedSecond = Queue.dequeue reused
-    assertFor subject [ "queue_dequeue" ] case3 (Some 20) (dequeuedSecond |> Option.map fst)
-    let afterSecondDequeue = dequeuedSecond |> Option.map snd |> Option.defaultValue reused
-    let dequeuedThird = Queue.dequeue afterSecondDequeue
-    assertFor subject [ "queue_dequeue" ] case3 (Some 30) (dequeuedThird |> Option.map fst)
-    let afterThirdDequeue = dequeuedThird |> Option.map snd |> Option.defaultValue afterSecondDequeue
-    let dequeuedReused = Queue.dequeue afterThirdDequeue
-    assertFor subject [ "queue_dequeue"; "queue_enqueue" ] case3 (Some 40) (dequeuedReused |> Option.map fst)
-    let afterReusedDequeue = dequeuedReused |> Option.map snd |> Option.defaultValue afterThirdDequeue
+    let (dequeuedSecond, afterSecondDequeue) = Queue.dequeue reused
+    assertFor subject [ "queue_dequeue" ] case3 20 dequeuedSecond
+    let (dequeuedThird, afterThirdDequeue) = Queue.dequeue afterSecondDequeue
+    assertFor subject [ "queue_dequeue" ] case3 30 dequeuedThird
+    let (dequeuedReused, afterReusedDequeue) = Queue.dequeue afterThirdDequeue
+    assertFor subject [ "queue_dequeue"; "queue_enqueue" ] case3 40 dequeuedReused
     assertFor subject [ "queue_dequeue"; "queue_is_empty" ] case3 true (Queue.isEmpty afterReusedDequeue)
     assertFor subject [ "queue_dequeue"; "queue_size" ] case3 0 (Queue.size afterReusedDequeue)
 
     let case4 = "empty after removal"
-    assertFor subject [ "queue_dequeue" ] case4 None (Queue.dequeue afterReusedDequeue)
+    assertFor subject [ "queue_dequeue" ] case4 Contract.FAILURE_VALUE (Queue.dequeue afterReusedDequeue |> fst)
+    assertFor subject [ "queue_dequeue" ] case4 afterReusedDequeue (Queue.dequeue afterReusedDequeue |> snd)
     assertFor subject [ "queue_dequeue"; "queue_is_empty" ] case4 true (Queue.isEmpty afterReusedDequeue)
 
 // ============================================================
