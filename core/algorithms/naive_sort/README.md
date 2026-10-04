@@ -155,8 +155,8 @@ dotnet build NaiveSort.slnx
 **Salida real / Actual output:**
 
 ```text
-  NaiveSort -> /home/yorche3/programming_languages/fsharp/core/algorithms/naive_sort/src/bin/Debug/net10.0/NaiveSort.dll
-  NaiveSort.Tests -> /home/yorche3/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll
+  NaiveSort -> ~/programming_languages/fsharp/core/algorithms/naive_sort/src/bin/Debug/net10.0/NaiveSort.dll
+  NaiveSort.Tests -> ~/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll
 
 Build succeeded.
     0 Warning(s)
@@ -176,9 +176,9 @@ dotnet test NaiveSort.slnx
 ```text
   Determining projects to restore...
   All projects are up-to-date for restore.
-  NaiveSort -> /home/yorche3/programming_languages/fsharp/core/algorithms/naive_sort/src/bin/Debug/net10.0/NaiveSort.dll
-  NaiveSort.Tests -> /home/yorche3/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll
-Test run for /home/yorche3/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll (.NETCoreApp,Version=v10.0)
+  NaiveSort -> ~/programming_languages/fsharp/core/algorithms/naive_sort/src/bin/Debug/net10.0/NaiveSort.dll
+  NaiveSort.Tests -> ~/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll
+Test run for ~/programming_languages/fsharp/core/algorithms/naive_sort/test/bin/Debug/net10.0/NaiveSort.Tests.dll (.NETCoreApp,Version=v10.0)
 VSTest version 18.0.2 (x64)
 
 Starting test execution, please wait...
