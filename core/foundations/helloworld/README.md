@@ -8,13 +8,13 @@ Implementación de la especificación [01_Hello_World](https://yorche3.github.io
 
 | Archivo | Propósito |
 |---------|-----------|
-| [`hello-world.fsx`](hello-world.fsx) | Código fuente: imprime `"Hello, World! from F#"` en la consola. |
+| [`hello_world.fsx`](hello_world.fsx) | Código fuente: imprime `"Hello, World! from F#!"` en la consola. |
 
 **Estructura de directorios esperada:**
 
 ```text
 helloworld/
-├── hello-world.fsx   # Código fuente (script)
+├── hello_world.fsx   # Código fuente (script)
 └── README.md        # Este archivo
 ```
 
@@ -42,20 +42,20 @@ Features:
 
 ## 📄 Archivos de configuración clave / Key Configuration Files
 
-### `hello-world.fsx`
+### `hello_world.fsx`
 
 **ES:** Script F# que imprime un saludo en la consola usando `printfn`.
 
 **EN:** F# script that prints a greeting to the console using `printfn`.
 
 ```fsharp
-printfn "Hello, World! from F#"
+printfn "Hello, World! from F#!"
 ```
 
 | Elemento | Propósito |
 |----------|-----------|
 | `printfn` | Función de F# que imprime una cadena con formato seguida de un salto de línea |
-| `"Hello, World! from F#"` | Argumento: la cadena a imprimir |
+| `"Hello, World! from F#!"` | Argumento: la cadena a imprimir |
 
 > **ES:** `printfn` es la función de salida formateada de F#, similar a `printf` en C pero con tipado seguro. La `n` al final indica que añade automáticamente un salto de línea (`\n`). También existe `printf` (sin salto de línea) y `sprintf` (que devuelve una cadena).
 > 
@@ -88,7 +88,7 @@ winget install Microsoft.DotNet.SDK.8
 
 ```bash
 cd core/foundations/helloworld
-dotnet fsi hello-world.fsx
+dotnet fsi hello_world.fsx
 ```
 
 **Salida esperada / Expected output:**
