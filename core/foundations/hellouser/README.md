@@ -10,13 +10,13 @@ Lee un nombre desde la entrada estándar y saluda al usuario.
 
 | Archivo | Propósito |
 |---------|-----------|
-| [`hello-user.fsx`](hello-user.fsx) | Código fuente: solicita un nombre al usuario y saluda de forma personalizada. |
+| [`hello_user.fsx`](hello_user.fsx) | Código fuente: solicita un nombre al usuario y saluda de forma personalizada. |
 
 **Estructura de directorios esperada:**
 
 ```text
 hellouser/
-├── hello-user.fsx   # Código fuente (script)
+├── hello_user.fsx   # Código fuente (script)
 └── README.md        # Este archivo
 ```
 
@@ -46,7 +46,7 @@ The new concepts compared to `helloworld` are:
 
 ## 📄 Archivos de configuración clave / Key Configuration Files
 
-### `hello-user.fsx`
+### `hello_user.fsx`
 
 **ES:** El flujo del programa es:
 
@@ -133,7 +133,7 @@ dotnet --version   # Verificar instalación
 
 ```bash
 cd core/foundations/hellouser
-dotnet fsi hello-user.fsx
+dotnet fsi hello_user.fsx
 ```
 
 **Salida esperada / Expected output:**
