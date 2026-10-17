@@ -2,9 +2,9 @@
 
 // Contrato del módulo `data_structures_basics` — especificación 06_Data_Structures_Basics.
 //
-// Esqueleto del paso 4b: declara los tipos nuevos y las firmas del contrato, y
-// deja el cuerpo de cada operación en su indicador natural, sin resolver ningún
-// caso. El algoritmo es del paso 5 y la suite, del 4c: aquí no se calcula nada.
+// Contrato completo: declara los tipos nuevos, las firmas y el cuerpo de cada
+// operación sobre el mismo `Node`. Solo los enlaces usan `None`; las lecturas
+// fallibles devuelven el centinela `-1`.
 //
 // Indicadores naturales:
 //   * `Node` es el único tipo que usa `None`: los campos `Value`/`Next`, su enlace ausente;
