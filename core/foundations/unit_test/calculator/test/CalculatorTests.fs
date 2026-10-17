@@ -1,4 +1,4 @@
-﻿module Tests
+﻿module CalculatorTests
 
 open System
 open Xunit
