@@ -3,45 +3,29 @@ namespace DataStructuresAdvanced
 // Contrato del módulo `data_structures_advanced` — especificación
 // 07_Data_Structures_Advanced.
 //
-// Contrato completo: declara los tipos nuevos, las firmas y un cuerpo centinela
-// por operación. La implementación real llega en el paso siguiente; hasta
-// entonces las operaciones devuelven el valor neutro de su tipo y la suite debe
-// fallar.
-//
-// Indicadores naturales:
-//   * los enlaces ausentes son `None`, la ausencia nativa de F# (`Node option`
-//     en la base homologada); F# no usa `null` para tipos propios;
-//   * las banderas devuelven `bool` (`false` no coincide con la ausencia);
-//   * los contadores devuelven `int` y la estructura vacía es `0`;
-//   * `Graph.getNeighbors` devuelve `int list option`: `None` = vértice no
-//     registrado, `Some []` = vértice aislado;
-//   * `Graph.addEdge` devuelve una tupla con el éxito y la estructura
-//     resultante: en el fallo, `false` y la **misma** estructura sin tocar,
-//     nunca una excepción — igual que `LinkedList.delete` en la base.
-//
-// Los campos `Value`, `Left` y `Right` de `TreeNode` son la vía del contrato
-// para `get_value`, `get_left` y `get_right`; las mutaciones se ofrecen como
-// función (`withLeft`, `withRight`), porque los registros son inmutables.
+// Enlace ausente: `None`. Preguntas: `bool`. Contadores: `int`. Vecinos:
+// `None` = vértice no registrado, `Some []` = aislado. `addEdge` falla con
+// `(false, el mismo grafo)`, nunca con una excepción.
 
-/// Nodo del árbol binario de búsqueda: valor y dos enlaces opcionales.
+/// Nodo del ABB: valor y dos enlaces opcionales.
 type TreeNode =
     { Value: int
       Left: TreeNode option
       Right: TreeNode option }
 
-/// Árbol binario de búsqueda: raíz opcional y contador de valores distintos.
+/// ABB: raíz opcional y contador de valores distintos.
 type BinaryTree =
     { Root: TreeNode option
       Count: int }
 
-/// Vértice del grafo: etiqueta, adyacencia ordenada y enlace al siguiente
-/// vértice del registro canónico. Interno a `Graph`.
+/// Vértice: etiqueta, vecinos ordenados y enlace al siguiente. Interno a
+/// `Graph`.
 type GraphNode =
     { Label: int
       Neighbors: int list
       NextVertex: GraphNode option }
 
-/// Grafo dirigido: registro enlazado de vértices y contadores propios.
+/// Grafo dirigido: registro enlazado y contadores propios.
 type Graph =
     { Vertices: GraphNode option
       VertexCount: int
@@ -50,62 +34,137 @@ type Graph =
 [<RequireQualifiedAccess>]
 module TreeNode =
 
-    /// Nodo con el valor indicado y ambos enlaces ausentes (`init`).
-    let create (_value: int) : TreeNode =
-        { Value = 0; Left = None; Right = None }
+    /// Nodo con el valor y ambos enlaces ausentes (`init`).
+    let create (value: int) : TreeNode =
+        { Value = value; Left = None; Right = None }
 
-    /// Copia del nodo con el enlace izquierdo reemplazado (`set_left`).
-    let withLeft (_left: TreeNode option) (node: TreeNode) : TreeNode = node
+    /// Copia con el enlace izquierdo reemplazado (`set_left`).
+    let withLeft (left: TreeNode option) (node: TreeNode) : TreeNode =
+        { node with Left = left }
 
-    /// Copia del nodo con el enlace derecho reemplazado (`set_right`).
-    let withRight (_right: TreeNode option) (node: TreeNode) : TreeNode = node
+    /// Copia con el enlace derecho reemplazado (`set_right`).
+    let withRight (right: TreeNode option) (node: TreeNode) : TreeNode =
+        { node with Right = right }
 
 [<RequireQualifiedAccess>]
 module BinaryTree =
 
-    /// Árbol vacío utilizable: sin raíz y contador a cero (`init`).
+    /// Árbol vacío (`init`).
     let empty : BinaryTree =
         { Root = None; Count = 0 }
 
-    /// Inserta el valor; un duplicado también es éxito y no crece el tamaño.
-    let insert (_value: int) (tree: BinaryTree) : BinaryTree = tree
+    let rec private insertNode
+        (value: int)
+        (node: TreeNode option)
+        : TreeNode option * bool =
+        match node with
+        | None -> (Some (TreeNode.create value), true)
+        | Some n ->
+            if value = n.Value then (Some n, false)
+            elif value < n.Value then
+                let newLeft, inserted = insertNode value n.Left
+                (Some (TreeNode.withLeft newLeft n), inserted)
+            else
+                let newRight, inserted = insertNode value n.Right
+                (Some (TreeNode.withRight newRight n), inserted)
+
+    /// Inserta; un duplicado también es éxito y no crece.
+    let insert (value: int) (tree: BinaryTree) : BinaryTree =
+        let newRoot, inserted = insertNode value tree.Root
+        { Root = newRoot
+          Count = if inserted then tree.Count + 1 else tree.Count }
+
+    let rec private containsNode (value: int) (node: TreeNode option) : bool =
+        match node with
+        | None -> false
+        | Some n ->
+            if value = n.Value then true
+            elif value < n.Value then containsNode value n.Left
+            else containsNode value n.Right
 
     /// Pertenencia según la invariante del ABB.
-    let contains (_value: int) (_tree: BinaryTree) : bool = false
+    let contains (value: int) (tree: BinaryTree) : bool =
+        containsNode value tree.Root
 
-    let isEmpty (_tree: BinaryTree) : bool = false
+    let isEmpty (tree: BinaryTree) : bool = tree.Count = 0
 
-    /// Número de valores distintos del árbol.
-    let size (_tree: BinaryTree) : int = 0
+    let size (tree: BinaryTree) : int = tree.Count
 
 [<RequireQualifiedAccess>]
 module Graph =
 
-    /// Grafo vacío utilizable: sin vértices y contadores a cero (`init`).
+    /// Grafo vacío (`init`).
     let empty : Graph =
         { Vertices = None
           VertexCount = 0
           EdgeCount = 0 }
 
-    /// Registra el vértice; un duplicado también es éxito y conserva la
-    /// adyacencia.
-    let addVertex (_label: int) (graph: Graph) : Graph = graph
+    let rec private findVertex (label: int) (node: GraphNode option) : GraphNode option =
+        match node with
+        | None -> None
+        | Some n -> if n.Label = label then Some n else findVertex label n.NextVertex
 
-    /// Añade la arista dirigida `u -> v`: `(true, grafo)` si se añadió o ya
-    /// estaba, `(false, el mismo grafo)` si falta alguno de los dos extremos.
-    let addEdge (_u: int) (_v: int) (graph: Graph) : (bool * Graph) = (false, graph)
+    /// Registra el vértice; el duplicado conserva la adyacencia.
+    let addVertex (label: int) (graph: Graph) : Graph =
+        match findVertex label graph.Vertices with
+        | Some _ -> graph
+        | None ->
+            let newNode =
+                { Label = label; Neighbors = []; NextVertex = graph.Vertices }
+
+            { graph with
+                Vertices = Some newNode
+                VertexCount = graph.VertexCount + 1 }
+
+    let rec private insertSorted (value: int) (sorted: int list) : int list =
+        match sorted with
+        | [] -> [value]
+        | h :: _ when value < h -> value :: sorted
+        | h :: t when value > h -> h :: insertSorted value t
+        | _ -> sorted
+
+    let rec private updateNeighbors
+        (label: int)
+        (newNeighbors: int list)
+        (node: GraphNode option)
+        : GraphNode option =
+        match node with
+        | None -> None
+        | Some n when n.Label = label -> Some { n with Neighbors = newNeighbors }
+        | Some n ->
+            Some { n with NextVertex = updateNeighbors label newNeighbors n.NextVertex }
+
+    /// Añade `u -> v`: `(false, el mismo grafo)` si falta un extremo.
+    let addEdge (u: int) (v: int) (graph: Graph) : (bool * Graph) =
+        match findVertex u graph.Vertices, findVertex v graph.Vertices with
+        | Some uNode, Some _ ->
+            if List.contains v uNode.Neighbors then
+                (true, graph)
+            else
+                let newNeighbors = insertSorted v uNode.Neighbors
+                let newVertices = updateNeighbors u newNeighbors graph.Vertices
+
+                (true,
+                 { graph with
+                     Vertices = newVertices
+                     EdgeCount = graph.EdgeCount + 1 })
+        | _ -> (false, graph)
 
     /// Verdadero si existe la arista dirigida `u -> v`.
-    let hasEdge (_u: int) (_v: int) (_graph: Graph) : bool = false
+    let hasEdge (u: int) (v: int) (graph: Graph) : bool =
+        match findVertex u graph.Vertices, findVertex v graph.Vertices with
+        | Some uNode, Some _ -> List.contains v uNode.Neighbors
+        | _ -> false
 
-    /// Vecinos ordenados del vértice: `None` si no está registrado, `Some []`
+    /// Vecinos ordenados: `None` si el vértice no está registrado, `Some []`
     /// si está aislado.
-    let getNeighbors (_label: int) (_graph: Graph) : int list option = None
+    let getNeighbors (label: int) (graph: Graph) : int list option =
+        match findVertex label graph.Vertices with
+        | Some n -> Some n.Neighbors
+        | None -> None
 
-    let isEmpty (_graph: Graph) : bool = false
+    let isEmpty (graph: Graph) : bool = graph.VertexCount = 0
 
-    /// Número de vértices registrados.
-    let vertexCount (_graph: Graph) : int = 0
+    let vertexCount (graph: Graph) : int = graph.VertexCount
 
-    /// Número de aristas registradas.
-    let edgeCount (_graph: Graph) : int = 0
+    let edgeCount (graph: Graph) : int = graph.EdgeCount
