@@ -9,7 +9,7 @@ Implementaciones de los módulos principales en **F# (.NET 10)**, ejecutados con
 | Módulo | Descripción |
 |--------|-------------|
 | [`foundations/`](foundations/) | **Fase 0 — Fundamentos**: `helloworld`, `hellouser`, `calculator`, `numbers` |
-| [`algorithms/`](algorithms/) | **Fase 1 — Algoritmos Puros**: `naive_sort`, `data_structures_basics` |
+| [`algorithms/`](algorithms/) | **Fase 1 — Algoritmos Puros**: `naive_sort`, `data_structures_basics`, `data_structures_advanced` |
 
 ---
 
@@ -39,6 +39,10 @@ dotnet test NaiveSort.slnx
 # Data Structures Basics Tests
 cd algorithms/data_structures_basics
 dotnet test DataStructuresBasics.slnx
+
+# Data Structures Advanced Tests
+cd algorithms/data_structures_advanced
+dotnet test DataStructuresAdvanced.slnx
 ```
 
 ---

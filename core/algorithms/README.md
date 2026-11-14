@@ -12,6 +12,7 @@ Los módulos de esta fase trabajan sobre listas **inmutables** (`int list`): nin
 |---|--------|-------------|:-----:|
 | [05](naive_sort/) | [Naive Sort](https://yorche3.github.io/programming_languages/core/algorithms/05_Naive_Sort/) | Selection, Bubble e Insertion Sort ($O(n^2)$) | 3 |
 | [06](data_structures_basics/) | [Data Structures Basics](https://yorche3.github.io/programming_languages/core/algorithms/06_Data_Structures_Basics/) | Node, LinkedList, Stack y Queue sobre registros inmutables | 23 |
+| [07](data_structures_advanced/) | [Data Structures Advanced](https://yorche3.github.io/programming_languages/core/algorithms/07_Data_Structures_Advanced/) | TreeNode, BinaryTree, GraphNode y Graph (inmutables, valor embebido) | 24 |
 
 ---
 
@@ -28,14 +29,23 @@ algorithms/
 │   │   ├── NaiveSortTests.fs    # 3 tests (7 casos cada uno)
 │   │   └── NaiveSort.Tests.fsproj
 │   └── README.md
-└── data_structures_basics/      # 06_Data_Structures_Basics
-    ├── DataStructuresBasics.slnx
-    ├── src/DataStructuresBasics.fs/
-    │   ├── DataStructuresBasics.fs    # Node, LinkedList, Stack, Queue
-    │   └── DataStructuresBasics.fsproj
-    ├── test/DataStructuresBasics.Tests/
-    │   ├── DataStructuresBasicsTests.fs  # 23 tests (15 casos)
-    │   └── DataStructuresBasics.Tests.fsproj
+├── data_structures_basics/      # 06_Data_Structures_Basics
+│   ├── DataStructuresBasics.slnx
+│   ├── src/DataStructuresBasics.fs/
+│   │   ├── DataStructuresBasics.fs    # Node, LinkedList, Stack, Queue
+│   │   └── DataStructuresBasics.fsproj
+│   ├── test/DataStructuresBasics.Tests/
+│   │   ├── DataStructuresBasicsTests.fs  # 23 tests (15 casos)
+│   │   └── DataStructuresBasics.Tests.fsproj
+│   └── README.md
+└── data_structures_advanced/    # 07_Data_Structures_Advanced
+    ├── DataStructuresAdvanced.slnx
+    ├── src/DataStructuresAdvanced.fs/
+    │   ├── DataStructuresAdvanced.fs    # TreeNode, BinaryTree, GraphNode, Graph
+    │   └── DataStructuresAdvanced.fsproj
+    ├── test/DataStructuresAdvanced.Tests/
+    │   ├── DataStructuresAdvancedTests.fs  # 24 tests (24 casos)
+    │   └── DataStructuresAdvanced.Tests.fsproj
     └── README.md
 ```
 
@@ -51,8 +61,8 @@ algorithms/
 | **Tests** | xUnit (`[<Fact>]`, `Assert.Equal`, `Assert.True`) |
 | **Entrada** | `dotnet test <solucion>.slnx` |
 | **Helpers** | Funciones **locales** dentro de cada función pública (encapsulación) |
-| **Inmutabilidad** | Listas inmutables (`naive_sort`) y registros inmutables (`data_structures_basics`): las funciones devuelven un valor nuevo |
-| **Indicador de fallo** | `-1` y tuplas `(valor, estructura)` en `data_structures_basics`; en `naive_sort` no aplica: `int list` no admite `null` |
+| **Inmutabilidad** | Listas inmutables (`naive_sort`) y registros inmutables (`data_structures_basics`, `data_structures_advanced`): las funciones devuelven un valor nuevo |
+| **Indicador de fallo** | `-1` y tuplas `(valor, estructura)` en `data_structures_basics`; `-1` en `data_structures_advanced`; en `naive_sort` no aplica: `int list` no admite `null` |
 | **Artefactos** | `bin/`, `obj/` — cubiertos por el `.gitignore` de la raíz del submódulo |
 
 ---
@@ -67,6 +77,10 @@ dotnet test NaiveSort.slnx
 # Data Structures Basics Tests
 cd data_structures_basics
 dotnet test DataStructuresBasics.slnx
+
+# Data Structures Advanced Tests
+cd data_structures_advanced
+dotnet test DataStructuresAdvanced.slnx
 ```
 
 ---
