@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/DataStructuresAdvanced/DataStructuresAdvanced.fsproj" />
+    <Project Path="src/DataStructuresAdvanced.fs/DataStructuresAdvanced.fsproj" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/DataStructuresAdvanced.Tests/DataStructuresAdvanced.Tests.fsproj" />

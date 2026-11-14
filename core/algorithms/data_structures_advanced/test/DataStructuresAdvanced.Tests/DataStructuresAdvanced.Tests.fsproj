@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Tests.fs" />
+    <Compile Include="DataStructuresAdvancedTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DataStructuresAdvanced\DataStructuresAdvanced.fsproj" />
+    <ProjectReference Include="..\..\src\DataStructuresAdvanced.fs\DataStructuresAdvanced.fsproj" />
   </ItemGroup>
 
 </Project>
